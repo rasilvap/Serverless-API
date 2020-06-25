@@ -1,0 +1,15 @@
+FROM node:lts-slim
+
+RUN mkdir -p /app
+
+WORKDIR /app
+# install node_modules
+# cc
+ADD package-lock.json /app/package-lock.json
+ADD package.json /app/package.json
+RUN npm install
+ADD . /app
+
+EXPOSE 3000
+
+CMD [ "npm", "start" ]
