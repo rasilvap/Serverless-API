@@ -1,0 +1,28 @@
+version: "3"
+services:
+  frontend:
+    stdin_open: true
+    container_name: firestore_manager
+    build:
+      context: ./client/firestore-app
+      dockerfile: DockerFile
+    image: rasilvap/firestore_manager
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/firestore-app:/app
+    environment:
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8081
+    depends_on:
+      - backend
+  backend:
+    container_name: firestore_manager_server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: rasilvap/firestore_manager_server
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./server:/app
