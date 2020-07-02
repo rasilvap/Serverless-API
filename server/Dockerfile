@@ -12,4 +12,4 @@ ADD . /app
 EXPOSE 8081
 
 # You can change this
-CMD [ "nodemon", "serverApp.js" ]
+CMD [ "node", "serverApp.js" ]

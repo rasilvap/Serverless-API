@@ -4,6 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+require("dotenv").config();
 
 const styles = (theme) => ({
   container: {
@@ -51,6 +52,7 @@ export default class PersonList extends React.Component {
 
   handleSubmitCount = (event) => {
     console.log("Entra count");
+    console.log("REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
     var params = new URLSearchParams();
     params.append("collection", this.state.collection);
     params.append("value", this.state.value);
