@@ -4,19 +4,17 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
 require("dotenv").config();
 
-const styles = (theme) => ({
-  container: {
-    display: "flex",
-    flexWrap: "wrap",
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(1),
+      width: "25ch",
+    },
   },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(3),
-    width: 250,
-  },
-});
+}));
 
 export default class PersonList extends React.Component {
   state = {
@@ -41,9 +39,10 @@ export default class PersonList extends React.Component {
       params: params,
     };
     //event.preventDefault(); No necesario.
-    console.log("request:" + request);
+    console.log("request: 127.0.0.1:" + request);
+    console.log("REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
 
-    axios.delete(`http://backend:8081/firestore/`, request).then((res) => {
+    axios.delete(`http://127.0.0.1:8081/firestore/`, request).then((res) => {
       console.log("react1: ", res);
       console.log("react2: ", res.data);
       this.setState({ total: res.data });
@@ -52,7 +51,6 @@ export default class PersonList extends React.Component {
 
   handleSubmitCount = (event) => {
     console.log("Entra count");
-    console.log("REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
     var params = new URLSearchParams();
     params.append("collection", this.state.collection);
     params.append("value", this.state.value);
@@ -61,16 +59,16 @@ export default class PersonList extends React.Component {
       params: params,
     };
     //event.preventDefault();
-    console.log("request:" + request);
-    console.log("BACKEND_HOST", process.env);
-    axios.get(`http://backend:8081/firestore/`, request).then((res) => {
+    console.log("request 127.0.0.1:" + request);
+    console.log("BACKEND_HOST:", process.env);
+    axios.get(`http://127.0.0.1:8081/firestore/`, request).then((res) => {
       this.setState({ total: res.data });
     });
   };
 
   render() {
     return (
-      <div>
+      <span>
         <form>
           <TextField
             name="collection"
@@ -120,10 +118,10 @@ export default class PersonList extends React.Component {
           <br />
           <br />
           <Typography variant="h6" gutterBottom>
-            {this.state.total}
+            <span>{this.state.total}</span>
           </Typography>
         </form>
-      </div>
+      </span>
     );
   }
 }
