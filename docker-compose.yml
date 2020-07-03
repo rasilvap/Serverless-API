@@ -11,9 +11,6 @@ services:
       - "3000:3000"
     volumes:
       - ./client/firestore-app:/app
-    environment:
-      - BACKEND_HOST=backend
-      - BACKEND_PORT=8081
     depends_on:
       - backend
   backend:

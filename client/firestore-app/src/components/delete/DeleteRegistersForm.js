@@ -5,7 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-require("dotenv").config();
+import Config from "../../config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,8 +41,9 @@ export default class PersonList extends React.Component {
     //event.preventDefault(); No necesario.
     console.log("request: 127.0.0.1:" + request);
     console.log("REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
+    console.log("process.env.REACT_APP_PORT:", process.env.REACT_APP_PORT);
 
-    axios.delete(`http://127.0.0.1:8081/firestore/`, request).then((res) => {
+    axios.delete(`${Config.backendUrl}/firestore/`, request).then((res) => {
       console.log("react1: ", res);
       console.log("react2: ", res.data);
       this.setState({ total: res.data });
@@ -61,7 +62,7 @@ export default class PersonList extends React.Component {
     //event.preventDefault();
     console.log("request 127.0.0.1:" + request);
     console.log("BACKEND_HOST:", process.env);
-    axios.get(`http://127.0.0.1:8081/firestore/`, request).then((res) => {
+    axios.get(`${Config.backendUrl}/firestore/`, request).then((res) => {
       this.setState({ total: res.data });
     });
   };
