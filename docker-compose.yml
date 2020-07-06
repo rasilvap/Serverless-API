@@ -19,6 +19,8 @@ services:
       context: ./server
       dockerfile: Dockerfile
     image: rasilvap/firestore_manager_server
+    environment:
+      - BACKEND_PORT=8081
     ports:
       - "8081:8081"
     volumes:

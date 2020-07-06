@@ -26,11 +26,9 @@ export default class PersonList extends React.Component {
 
   handleChange(evt, field) {
     this.setState({ [field]: evt.target.value });
-    console.log("new value", evt.target.value);
   }
 
   handleSubmit = (event) => {
-    console.log("Entra delete");
     var params = new URLSearchParams();
     params.append("collection", this.state.collection);
     params.append("value", this.state.value);
@@ -38,11 +36,6 @@ export default class PersonList extends React.Component {
     var request = {
       params: params,
     };
-    //event.preventDefault(); No necesario.
-    console.log("request: 127.0.0.1:" + request);
-    console.log("REACT_APP_BACKEND_URL:", process.env.REACT_APP_BACKEND_URL);
-    console.log("process.env.REACT_APP_PORT:", process.env.REACT_APP_PORT);
-
     axios.delete(`${Config.backendUrl}/firestore/`, request).then((res) => {
       console.log("react1: ", res);
       console.log("react2: ", res.data);
@@ -51,7 +44,6 @@ export default class PersonList extends React.Component {
   };
 
   handleSubmitCount = (event) => {
-    console.log("Entra count");
     var params = new URLSearchParams();
     params.append("collection", this.state.collection);
     params.append("value", this.state.value);
@@ -59,9 +51,6 @@ export default class PersonList extends React.Component {
     var request = {
       params: params,
     };
-    //event.preventDefault();
-    console.log("request 127.0.0.1:" + request);
-    console.log("BACKEND_HOST:", process.env);
     axios.get(`${Config.backendUrl}/firestore/`, request).then((res) => {
       this.setState({ total: res.data });
     });

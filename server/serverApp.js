@@ -1,19 +1,20 @@
-//ar config = require('./config');
-var express = require('express');
+const express = require("express"),
+  bodyParser = require("body-parser"),
+  jwt = require("jsonwebtoken"),
+  config = require("./configs/config");
 var app = express();
-var bodyParser = require('body-parser');
-var cors = require('cors');
+var cors = require("cors");
 app.use(bodyParser.json());
 app.use(cors());
- 
-require('./routes/routes.js')(app);
- //console.log(config)
-// Create a Server
-var server = app.listen(8081, function () {
- 
-  var host = server.address().address
-  var port = server.address().port
- 
-  console.log("App listening at http://%s:%s", host, port)
- 
-})
+require("./routes/routes.js")(app);
+// 1
+app.set("key", config.key);
+// 2
+app.use(bodyParser.urlencoded({ extended: true }));
+
+var server = app.listen(process.env.BACKEND_PORT, function () {
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log("App listening at http://%s:%s", host, port);
+});
