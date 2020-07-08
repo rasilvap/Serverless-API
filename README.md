@@ -17,3 +17,5 @@ Axios
 jwt
 
 Firebase admin SDK
+
+Docker compose
