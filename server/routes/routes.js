@@ -2,26 +2,6 @@ const controllers = require("../controllers/deletion/controller.js");
 const userController = require("../controllers/users/userController.js");
 const jwt = require("jsonwebtoken");
 
-/*const rutasProtegidas = express.Router();
-rutasProtegidas.use((req, res, next) => {
-  const token = req.headers["access-token"];
-
-  if (token) {
-    jwt.verify(token, app.get("llave"), (err, decoded) => {
-      if (err) {
-        return res.json({ mensaje: "Token inválida" });
-      } else {
-        req.decoded = decoded;
-        next();
-      }
-    });
-  } else {
-    res.send({
-      mensaje: "Token no proveída.",
-    });
-  }
-});*/
-
 module.exports = function (app) {
   // Delete a Document with parameters
   app.use((req, res, next) => {
@@ -42,6 +22,7 @@ module.exports = function (app) {
     controllers.findAll
   );
   app.post("/authenticate", (req, res) => {
+    const test = controllers.findAll;
     if (req.body.user === "asfo" && req.body.password === "helloworld") {
       const payload = {
         check: true,

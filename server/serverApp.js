@@ -6,6 +6,7 @@ var app = express();
 var cors = require("cors");
 app.use(bodyParser.json());
 app.use(cors());
+require("dotenv").config();
 require("./routes/routes.js")(app);
 // 1
 app.set("key", config.key);
