@@ -19,3 +19,29 @@ jwt
 Firebase admin SDK
 
 Docker compose
+
+The serverApp runs in the port: 8081 by default.
+
+Json example for createUser Endpoint
+
+```
+{
+    "user": {
+    "firstName": "Pablo",
+    "lastName": "Neruda",
+    "gender": "man",
+    "age": 24,
+    "user": "userNo",
+    "password": "pass",
+    "address": {
+        "streetAddress": "126",
+        "city": "San Jone",
+        "state": "CA",
+        "postalCode": "394221"
+    },
+    "phoneNumbers": [
+        { "type": "home", "number": "7383627627" }
+    ]
+  }
+}
+```
