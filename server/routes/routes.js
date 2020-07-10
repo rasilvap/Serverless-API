@@ -2,12 +2,14 @@ const controllers = require("../controllers/deletion/controller.js");
 const userController = require("../controllers/users/userController.js");
 const jwt = require("jsonwebtoken");
 
+let verifyUser = function (req, res, next) {
+  console.log("Midd 1");
+  userController.findUser(req.body, res);
+  console.log("Rta:");
+  next();
+};
+
 module.exports = function (app) {
-  // Delete a Document with parameters
-  app.use((req, res, next) => {
-    console.log("This is a Middelware");
-    next();
-  });
   app.delete("/firestore/", controllers.delete);
   app.get(
     "/firestore/",
@@ -39,5 +41,7 @@ module.exports = function (app) {
     }
   });
 
+  app.use(verifyUser);
   app.post("/createUser/", userController.create);
+  app.get("/findUserUser/", userController.findUser);
 };
