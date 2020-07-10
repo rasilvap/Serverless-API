@@ -43,5 +43,5 @@ module.exports = function (app) {
 
   app.use(verifyUser);
   app.post("/createUser/", userController.create);
-  app.post("/findUserUser/", userController.findUser);
+  app.get("/findUserUser/", userController.findUser);
 };
