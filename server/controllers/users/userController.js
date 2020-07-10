@@ -25,11 +25,11 @@ exports.findUser = function (req, res) {
     try {
       var query = db
         .collection("users")
-        .where("user", "==", req.user.user)
-        .where("password", "==", req.user.password);
+        .where("user", "==", req.query.user)
+        .where("password", "==", req.query.password);
       query.get().then(function (querySnapshot) {
         if (querySnapshot.size > 0) {
-          const accessToken = generateAccessToken({ name: req.user.user });
+          const accessToken = generateAccessToken({ name: req.query.user });
           res.json({ accessToken: accessToken });
         } else {
           return res.status(500).send("User doesn't exist:");
