@@ -2,27 +2,21 @@ const controllers = require("../controllers/deletion/controller.js");
 const userController = require("../controllers/users/userController.js");
 const jwt = require("jsonwebtoken");
 
-let verifyUser = function (req, res, next) {
+/*let verifyUser = function (req, res, next) {
   console.log("Midd 1");
   userController.findUser(req.body, res);
   console.log("Rta:");
   next();
-};
+};*/
+
+function verifyUser(req, res, next) {
+  userController.findUser;
+  next();
+}
 
 module.exports = function (app) {
   app.delete("/firestore/", controllers.delete);
-  app.get(
-    "/firestore/",
-    (req, res, next) => {
-      console.log("This is another Middelware");
-      next();
-    },
-    (req, res, next) => {
-      console.log("This is another Middelware");
-      next();
-    },
-    controllers.findAll
-  );
+  app.get("/firestore/", controllers.findAll);
   app.post("/authenticate", (req, res) => {
     const test = controllers.findAll;
     if (req.body.user === "asfo" && req.body.password === "helloworld") {
@@ -41,7 +35,7 @@ module.exports = function (app) {
     }
   });
 
-  app.use(verifyUser);
   app.post("/createUser/", userController.create);
   app.get("/findUserUser/", userController.findUser);
+  app.get("/login/", verifyUser, userController.login);
 };
