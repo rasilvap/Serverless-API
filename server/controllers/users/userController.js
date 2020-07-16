@@ -70,10 +70,12 @@ exports.findUseByEmailAndPassword = async function (user, password) {
       .where("user", "==", user)
       .where("password", "==", password);
     const querySnapshot = await query.get();
-    if (querySnapshot.size > 0) {
+    if (!querySnapshot.empty) {
       // assume the query only returns 1 user?
       let rta = querySnapshot.docs[0].data();
       return rta;
+    } else {
+      return;
     }
   } catch (error) {
     return res.status(500).send(error);
