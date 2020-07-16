@@ -9,8 +9,29 @@ const jwt = require("jsonwebtoken");
   next();
 };*/
 
-function verifyUser(req, res, next) {
-  userController.findUser;
+async function verifyUser(req, res, next) {
+  let user = req.query.user;
+  let password = req.query.password;
+  console.log("Starting...");
+  let userExist = await userController.findUseByEmailAndPassword(
+    user,
+    password
+  );
+  if (userExist) {
+    console.log("userExist rta:", userExist);
+  }
+
+  next();
+}
+
+function verifyUser1(req, res, next) {
+  console.log("starting....");
+  if (req.query.user && req.query.password) {
+    // previous middleware found a user
+    console.log("continue..");
+  } else {
+    console.log("stop...");
+  }
   next();
 }
 
@@ -37,5 +58,6 @@ module.exports = function (app) {
 
   app.post("/createUser/", userController.create);
   app.get("/findUserUser/", userController.findUser);
+  //app.use(userController.userExist);
   app.get("/login/", verifyUser, userController.login);
 };

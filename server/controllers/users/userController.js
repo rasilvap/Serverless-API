@@ -44,22 +44,40 @@ exports.findUser = function (req, res) {
   })();
 };
 
-exports.findUserOne = function (req, res) {
-  const auth = async (req, res, next) => {
-    try {
-      const user = await db
-        .collection("users")
-        .where("user", "==", req.query.user)
-        .where("password", "==", req.query.password);
-      if (!user) {
-        throw new Error();
-      }
-      req.user = user;
-      next();
-    } catch (e) {
-      res.status(401).send({ error: "Please authenticate." });
+exports.userExist = async function (req, res, next) {
+  try {
+    var query = db
+      .collection("users")
+      .where("user", "==", req.query.user)
+      .where("password", "==", req.query.password);
+
+    const querySnapshot = await query.get();
+    if (querySnapshot.size > 0) {
+      // assume the query only returns 1 user?
+      req.userObj = querySnapshot.docs[0].data();
     }
-  };
+
+    next();
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+exports.findUseByEmailAndPassword = async function (user, password) {
+  try {
+    var query = await db
+      .collection("users")
+      .where("user", "==", user)
+      .where("password", "==", password);
+    const querySnapshot = await query.get();
+    if (querySnapshot.size > 0) {
+      // assume the query only returns 1 user?
+      let rta = querySnapshot.docs[0].data();
+      return rta;
+    }
+  } catch (error) {
+    return res.status(500).send(error);
+  }
 };
 
 exports.login = function (req, res) {
@@ -73,23 +91,6 @@ function generateAccessToken(user) {
 }
 
 exports.userExist = function (req, res, next) {
-  (async () => {
-    try {
-      var query = db
-        .collection("users")
-        .where("user", "==", req.query.user)
-        .where("password", "==", req.query.password);
-      query.get().then(function (querySnapshot) {
-        if (querySnapshot.size > 0) {
-          res.json(true);
-          next();
-        } else {
-          res.json(false);
-          next();
-        }
-      });
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  })();
+  console.log("starting");
+  res.status(201).send({ token: "a(ver" });
 };
