@@ -1,6 +1,8 @@
 const admin = require("firebase-admin");
 let serviceAccount = require("../../serviceKey/serviceAccountKey.json");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 /*admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -11,14 +13,13 @@ const db = admin.firestore();
 exports.create = function (req, res) {
   (async () => {
     try {
-      console.log("Arranca...");
-      let user = req.body.use;
-      let password = user.password;
+      let user = req.body.user;
       query = buildQueryFindByUser(user.user);
-      let userExist = await findUseByEmailAndPassword(query);
+      let userExist = await findUseByUser(query);
       if (userExist) {
         res.status(401).send("User already exist....");
       }
+      user.password = encryptPassword(user.password);
       let id = db.collection("users").doc().id;
 
       await db.collection("users").doc(id).set(req.body.user);
@@ -50,12 +51,37 @@ exports.findUser = function (req, res) {
   })();
 };
 
-async function findUseByEmailAndPassword(query) {
+async function findUseByUser(query) {
   try {
     const querySnapshot = await query.get();
     if (!querySnapshot.empty) {
       // assume the query only returns 1 user?
       let rta = querySnapshot.docs[0].data();
+      return rta;
+    } else {
+      return;
+    }
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+}
+
+async function findUserByUserName(user, password) {
+  try {
+    console.log("Primera:", user);
+    query = buildQueryFindByUser(user);
+    const querySnapshot = await query.get();
+    console.log("Segunda:", password);
+    if (!querySnapshot.empty) {
+      console.log("Tercera");
+      // assume the query only returns 1 user?
+      let rta = querySnapshot.docs[0].data();
+      let validation = bcrypt.compareSync(password, rta.password);
+      console.log("rta.pass:", rta.password);
+      console.log("validation3333::::", validation);
+      if (!validation) {
+        return;
+      }
       return rta;
     } else {
       return;
@@ -72,15 +98,14 @@ exports.login = function (req, res) {
 async function verifyUser(req, res, next) {
   let user = req.query.user;
   let password = req.query.password;
-
+  console.log("password2:", password);
   // if no username or password then send
   if (!user || !password) {
     res.status(400).send("You need a username and password");
     return;
   }
 
-  const query = buildQueryFindByUserAndPassword(user, password);
-  let userExist = await findUseByEmailAndPassword(query);
+  let userExist = await findUserByUserName(user, password);
   if (!userExist) {
     res.status(401).send("No user with the given username");
   } else {
@@ -124,4 +149,13 @@ function buildQueryFindByUserAndPassword(user, password) {
 function buildQueryFindByUser(user) {
   var query = db.collection("users").where("user", "==", user);
   return query;
+}
+
+function encryptPassword(plainTextPword) {
+  if (!plainTextPword) {
+    return "";
+  } else {
+    var salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(plainTextPword, salt);
+  }
 }
