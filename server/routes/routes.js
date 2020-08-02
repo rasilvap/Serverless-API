@@ -1,8 +1,11 @@
 const controllers = require("../controllers/deletion/controller.js");
 const userController = require("../controllers/users/userController.js");
+const commentsController = require("../controllers/comments/commentsController.js");
 const jwt = require("jsonwebtoken");
 const verifyUser = require("./../controllers/users/userController.js")
   .verifyUser;
+const verifyToken = require("../controllers/comments/commentsController.js")
+  .verifyToken;
 
 module.exports = function (app) {
   app.delete("/firestore/", controllers.delete);
@@ -28,4 +31,5 @@ module.exports = function (app) {
   app.post("/createUser/", userController.create);
   // app.get("/findUserUser/", userController.findUser);
   app.get("/login/", verifyUser, userController.login);
+  app.post("/comment/", verifyToken, commentsController.create);
 };

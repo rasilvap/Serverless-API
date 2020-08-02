@@ -14,7 +14,7 @@ async function create(req, res) {
   try {
     let user = req.body.user;
 
-    let userExist = await findUserByUserName(user.user);
+    let userExist = await findUserByUserName(user.userName);
     if (userExist) {
       res.status(401).send("User already exist....");
     }
@@ -89,20 +89,20 @@ function login(req, res) {
 
 async function verifyUser(req, res, next) {
   // body o header
-  let user = req.query.user;
+  let userName = req.query.userName;
   let password = req.query.password;
   console.log("password2:", password);
   // if no username or password then send
-  if (!user || !password) {
+  if (!userName || !password) {
     res.status(400).send("You need a username and password");
     return;
   }
   try {
-    let userExist = await findUserByUserNamePassword(user, password); //revisar variable
-    if (!userExist) {
+    let user = await findUserByUserNamePassword(userName, password); //revisar variable
+    if (!user) {
       res.status(401).send("Wrong user or password.");
     } else {
-      const accessToken = generateAccessToken(userExist);
+      const accessToken = generateAccessToken(user);
       req.accessToken = accessToken;
       next();
       return;
