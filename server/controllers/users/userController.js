@@ -14,7 +14,7 @@ async function create(req, res) {
   try {
     let user = req.body.user;
 
-    let userExist = await findUserByUserName(user.user);
+    let userExist = await findUserByUserName(user.userName);
     if (userExist) {
       res.status(401).send("User already exist....");
     }
@@ -51,7 +51,6 @@ async function findUserByUserName(userName) {
     let query = buildQueryFindByUser(userName);
     const querySnapshot = await query.get();
     if (!querySnapshot.empty) {
-      // assume the query only returns 1 user?
       let rta = querySnapshot.docs[0].data();
       return rta;
     } else {
@@ -72,8 +71,6 @@ async function findUserByUserNamePassword(user, password) {
     // assume the query only returns 1 user?
     let rta = querySnapshot.docs[0].data();
     let validation = bcrypt.compareSync(password, rta.password);
-    console.log("rta.pass:", rta.password);
-    console.log("validation3333::::", validation);
     if (!validation) {
       return;
     }
@@ -89,20 +86,20 @@ function login(req, res) {
 
 async function verifyUser(req, res, next) {
   // body o header
-  let user = req.query.user;
+  let userName = req.query.userName;
   let password = req.query.password;
   console.log("password2:", password);
   // if no username or password then send
-  if (!user || !password) {
+  if (!userName || !password) {
     res.status(400).send("You need a username and password");
     return;
   }
   try {
-    let userExist = await findUserByUserNamePassword(user, password); //revisar variable
-    if (!userExist) {
+    let user = await findUserByUserNamePassword(userName, password); //revisar variable
+    if (!user) {
       res.status(401).send("Wrong user or password.");
     } else {
-      const accessToken = generateAccessToken(userExist);
+      const accessToken = generateAccessToken(user);
       req.accessToken = accessToken;
       next();
       return;
@@ -119,13 +116,13 @@ function generateAccessToken(user) {
 function buildQueryFindByUserAndPassword(user, password) {
   var query = db
     .collection("users")
-    .where("user", "==", user)
+    .where("userName", "==", user)
     .where("password", "==", password);
   return query;
 }
 
 function buildQueryFindByUser(user) {
-  var query = db.collection("users").where("user", "==", user);
+  var query = db.collection("users").where("userName", "==", user);
   return query;
 }
 
@@ -144,13 +141,3 @@ module.exports = {
   findUser,
   login,
 };
-
-/*
-hacer un endpoint que reciba ese token crearcomentario enviar token en el header auth
-validar el token con la lib verify token invaido 403
-valido pasa y crea comment con id de usuario
-decodificar token y guardarlo en var request.decodedUser
-decoded user para tomar el id y crear comment
-
-joi validar schemas
-*/
