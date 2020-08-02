@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(cors());
 require("dotenv").config();
 require("./routes/routes.js")(app);
-app.set("key", config.key);
+//app.set("key", config.key);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var server = app.listen(
