@@ -10,49 +10,45 @@ const saltRounds = 10;
 
 const db = admin.firestore();
 
-exports.create = function (req, res) {
-  (async () => {
-    try {
-      let user = req.body.user;
-      query = buildQueryFindByUser(user.user);
-      let userExist = await findUseByUser(query);
-      if (userExist) {
-        res.status(401).send("User already exist....");
-      }
-      user.password = encryptPassword(user.password);
-      let id = db.collection("users").doc().id;
-
-      await db.collection("users").doc(id).set(req.body.user);
-      return res.status(200).send(req.body.user);
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  })();
-};
-
-exports.findUser = function (req, res) {
-  (async () => {
-    try {
-      var query = db
-        .collection("users")
-        .where("user", "==", req.query.user)
-        .where("password", "==", req.query.password);
-      query.get().then(function (querySnapshot) {
-        if (querySnapshot.size > 0) {
-          const accessToken = generateAccessToken({ name: req.query.user });
-          res.json({ accessToken: accessToken });
-        } else {
-          return res.status(500).send("User doesn't exist:");
-        }
-      });
-    } catch {
-      return res.status(500).send(error);
-    }
-  })();
-};
-
-async function findUseByUser(query) {
+async function create(req, res) {
   try {
+    let user = req.body.user;
+
+    let userExist = await findUserByUserName(user.user);
+    if (userExist) {
+      res.status(401).send("User already exist....");
+    }
+    user.password = encryptPassword(user.password);
+    let id = db.collection("users").doc().id;
+
+    await db.collection("users").doc(id).set(req.body.user);
+    return res.status(200).send(req.body.user);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+}
+
+async function findUser(req, res) {
+  try {
+    var query = db
+      .collection("users")
+      .where("user", "==", req.query.user)
+      .where("password", "==", req.query.password);
+    const querySnapshot = await query.get();
+    if (querySnapshot.size > 0) {
+      const accessToken = generateAccessToken({ name: req.query.user });
+      res.json({ accessToken: accessToken });
+    } else {
+      return res.status(500).send("User doesn't exist.");
+    }
+  } catch {
+    return res.status(500).send(error);
+  }
+}
+
+async function findUserByUserName(userName) {
+  try {
+    let query = buildQueryFindByUser(userName);
     const querySnapshot = await query.get();
     if (!querySnapshot.empty) {
       // assume the query only returns 1 user?
@@ -66,36 +62,33 @@ async function findUseByUser(query) {
   }
 }
 
-async function findUserByUserName(user, password) {
-  try {
-    console.log("Primera:", user);
-    query = buildQueryFindByUser(user);
-    const querySnapshot = await query.get();
-    console.log("Segunda:", password);
-    if (!querySnapshot.empty) {
-      console.log("Tercera");
-      // assume the query only returns 1 user?
-      let rta = querySnapshot.docs[0].data();
-      let validation = bcrypt.compareSync(password, rta.password);
-      console.log("rta.pass:", rta.password);
-      console.log("validation3333::::", validation);
-      if (!validation) {
-        return;
-      }
-      return rta;
-    } else {
+async function findUserByUserNamePassword(user, password) {
+  console.log("Primera:", user);
+  query = buildQueryFindByUser(user);
+  const querySnapshot = await query.get();
+  console.log("Segunda:", password);
+  if (!querySnapshot.empty) {
+    console.log("Tercera");
+    // assume the query only returns 1 user?
+    let rta = querySnapshot.docs[0].data();
+    let validation = bcrypt.compareSync(password, rta.password);
+    console.log("rta.pass:", rta.password);
+    console.log("validation3333::::", validation);
+    if (!validation) {
       return;
     }
-  } catch (error) {
-    return res.status(500).send(error);
+    return rta;
+  } else {
+    return;
   }
 }
 
-exports.login = function (req, res) {
+function login(req, res) {
   res.status(201).send({ token: req.accessToken });
-};
+}
 
 async function verifyUser(req, res, next) {
+  // body o header
   let user = req.query.user;
   let password = req.query.password;
   console.log("password2:", password);
@@ -104,38 +97,23 @@ async function verifyUser(req, res, next) {
     res.status(400).send("You need a username and password");
     return;
   }
-
-  let userExist = await findUserByUserName(user, password);
-  if (!userExist) {
-    res.status(401).send("No user with the given username");
-  } else {
-    const accessToken = authenticate();
-    req.accessToken = accessToken;
-    next();
+  try {
+    let userExist = await findUserByUserNamePassword(user, password); //revisar variable
+    if (!userExist) {
+      res.status(401).send("Wrong user or password.");
+    } else {
+      const accessToken = generateAccessToken(userExist);
+      req.accessToken = accessToken;
+      next();
+      return;
+    }
+  } catch (error) {
+    res.status(500).send(error);
   }
-  console.log("user eneddd");
-  // next();
 }
-
-module.exports.verifyUser = verifyUser;
 
 function generateAccessToken(user) {
-  const token = jwt.sign(payload, app.get("key"), {
-    expiresIn: 1440,
-  });
-
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 1440 });
-}
-
-function authenticate() {
-  const payload = {
-    check: true,
-  };
-  const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: 1440,
-  });
-
-  return token;
 }
 
 function buildQueryFindByUserAndPassword(user, password) {
@@ -159,3 +137,20 @@ function encryptPassword(plainTextPword) {
     return bcrypt.hashSync(plainTextPword, salt);
   }
 }
+
+module.exports = {
+  verifyUser,
+  create,
+  findUser,
+  login,
+};
+
+/*
+hacer un endpoint que reciba ese token crearcomentario enviar token en el header auth
+validar el token con la lib verify token invaido 403
+valido pasa y crea comment con id de usuario
+decodificar token y guardarlo en var request.decodedUser
+decoded user para tomar el id y crear comment
+
+joi validar schemas
+*/

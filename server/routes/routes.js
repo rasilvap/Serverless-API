@@ -26,6 +26,6 @@ module.exports = function (app) {
   });
 
   app.post("/createUser/", userController.create);
-  app.get("/findUserUser/", userController.findUser);
+  // app.get("/findUserUser/", userController.findUser);
   app.get("/login/", verifyUser, userController.login);
 };
