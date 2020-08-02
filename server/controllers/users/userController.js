@@ -51,7 +51,6 @@ async function findUserByUserName(userName) {
     let query = buildQueryFindByUser(userName);
     const querySnapshot = await query.get();
     if (!querySnapshot.empty) {
-      // assume the query only returns 1 user?
       let rta = querySnapshot.docs[0].data();
       return rta;
     } else {
@@ -72,8 +71,6 @@ async function findUserByUserNamePassword(user, password) {
     // assume the query only returns 1 user?
     let rta = querySnapshot.docs[0].data();
     let validation = bcrypt.compareSync(password, rta.password);
-    console.log("rta.pass:", rta.password);
-    console.log("validation3333::::", validation);
     if (!validation) {
       return;
     }
@@ -119,13 +116,13 @@ function generateAccessToken(user) {
 function buildQueryFindByUserAndPassword(user, password) {
   var query = db
     .collection("users")
-    .where("user", "==", user)
+    .where("userName", "==", user)
     .where("password", "==", password);
   return query;
 }
 
 function buildQueryFindByUser(user) {
-  var query = db.collection("users").where("user", "==", user);
+  var query = db.collection("users").where("userName", "==", user);
   return query;
 }
 
@@ -144,13 +141,3 @@ module.exports = {
   findUser,
   login,
 };
-
-/*
-hacer un endpoint que reciba ese token crearcomentario enviar token en el header auth
-validar el token con la lib verify token invaido 403
-valido pasa y crea comment con id de usuario
-decodificar token y guardarlo en var request.decodedUser
-decoded user para tomar el id y crear comment
-
-joi validar schemas
-*/
