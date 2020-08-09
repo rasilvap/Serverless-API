@@ -64,4 +64,4 @@ The application is using jwt for user authentication, once the user is logged, t
 ```
 Run in Postman:
 
-To run the endpoints through postman you can use the next collection: (https://run.pstmn.io/button.svg)](https://www.getpostman.com/collections/c32627bde472bcdf8d98) 
+To run the endpoints through postman you can use the next collection: [![Run in Postman](https://run.pstmn.io/button.svg)](https://www.getpostman.com/collections/c32627bde472bcdf8d98) 
