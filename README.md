@@ -31,8 +31,8 @@ Json example for createUser Endpoint
     "lastName": "Neruda",
     "gender": "man",
     "age": 24,
-    "user": "userNo",
-    "password": "pass",
+    "userName": "neruda",
+    "password": "pablo123",
     "address": {
         "streetAddress": "126",
         "city": "San Jone",
@@ -45,3 +45,19 @@ Json example for createUser Endpoint
   }
 }
 ```
+
+Json example for create comments:
+```
+{
+  "comments": {
+    "comments": "This is an example comment"
+  }
+}
+```
+
+The application is using jwt for user authentication, once the user is logged, the token is used to obatain his information, with the above body we get the user info as response:
+
+{
+    "comments": "This is a new comment",
+    "userName": "neruda"
+}
