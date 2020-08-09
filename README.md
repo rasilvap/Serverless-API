@@ -56,8 +56,12 @@ Json example for create comments:
 ```
 
 The application is using jwt for user authentication, once the user is logged, the token is used to obatain his information, with the above body we get the user info as response:
-
+```
 {
     "comments": "This is a new comment",
     "userName": "neruda"
 }
+```
+Run in Postman:
+
+To run the endpoints through postman you can use the next collection: https://www.getpostman.com/collections/c32627bde472bcdf8d98
