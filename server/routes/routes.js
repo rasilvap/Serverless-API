@@ -6,6 +6,8 @@ const verifyUser = require("./../controllers/users/userController.js")
   .verifyUser;
 const verifyToken = require("../controllers/comments/commentsController.js")
   .verifyToken;
+const validateUser = require("./../controllers/users/userController.js")
+  .validateUser;
 
 module.exports = function (app) {
   app.delete("/firestore/", controllers.delete);
@@ -28,7 +30,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post("/createUser/", userController.create);
+  app.post("/createUser/", validateUser, userController.create);
   // app.get("/findUserUser/", userController.findUser);
   app.get("/login/", verifyUser, userController.login);
   app.post("/comment/", verifyToken, commentsController.create);

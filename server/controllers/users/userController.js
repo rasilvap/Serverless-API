@@ -2,6 +2,7 @@ const admin = require("firebase-admin");
 let serviceAccount = require("../../serviceKey/serviceAccountKey.json");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Joi = require("@hapi/joi");
 const saltRounds = 10;
 
 /*admin.initializeApp({
@@ -135,9 +136,36 @@ function encryptPassword(plainTextPword) {
   }
 }
 
+function validateUser(req, res, next) {
+  const user = req.body.user;
+  const JoiSchema = Joi.object({
+    userName: Joi.string().min(5).max(30).required(),
+    password: Joi.string().min(5).max(30).required(),
+    firstName: Joi.string().min(5).max(30).required(),
+    lastName: Joi.string().min(5).max(30).required(),
+    gender: Joi.string().min(1).max(1).required(),
+    age: Joi.number().integer().required(),
+    email: Joi.string().email().min(5).max(50).optional(),
+    address: Joi.object({
+      streetAddress: Joi.string().required(),
+      city: Joi.string().required(),
+      state: Joi.string().required(),
+      postalCode: Joi.string().required(),
+    }),
+  }).options({ abortEarly: false });
+
+  const response =  JoiSchema.validate(user);
+    if (response.error) {
+      res.status(500).send(response.error.details);
+    } else {
+      console.log("Validated Data");
+    }
+}
+
 module.exports = {
   verifyUser,
   create,
   findUser,
   login,
+  validateUser,
 };
