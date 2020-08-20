@@ -62,6 +62,9 @@ The application is using jwt for user authentication, once the user is logged, t
     "userName": "neruda"
 }
 ```
+TODO
+Add schema validators.
+
 Run in Postman:
 
 To run the endpoints through postman you can use the next collection:
